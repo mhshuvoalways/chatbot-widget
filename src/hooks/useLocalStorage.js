@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 export const useLocalStorage = (userId) => {
   const [messages, setMessages] = useState([]);
@@ -14,7 +14,7 @@ export const useLocalStorage = (userId) => {
         JSON.stringify(messagesToSave)
       );
     } catch (e) {
-      console.error('Error saving messages to localStorage:', e);
+      console.error("Error saving messages to localStorage:", e);
     }
   };
 
@@ -28,13 +28,20 @@ export const useLocalStorage = (userId) => {
         }
       }
     } catch (e) {
-      console.error('Error loading messages from localStorage:', e);
+      console.error("Error loading messages from localStorage:", e);
     }
   };
 
-  const addMessage = (type, content, options = [], suppressSave = false, timestampOverride = null, leadForm = null) => {
+  const addMessage = (
+    type,
+    content,
+    options = [],
+    suppressSave = false,
+    timestampOverride = null,
+    leadForm = null
+  ) => {
     const now = timestampOverride ? new Date(timestampOverride) : new Date();
-    
+
     const newMessage = {
       id: `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`,
       type,
@@ -44,7 +51,7 @@ export const useLocalStorage = (userId) => {
       leadForm,
     };
 
-    setMessages(prev => {
+    setMessages((prev) => {
       const updated = [...prev, newMessage];
       if (!suppressSave) {
         saveMessages(updated);
@@ -58,7 +65,7 @@ export const useLocalStorage = (userId) => {
     try {
       localStorage.removeItem(getLocalStorageKey());
     } catch (e) {
-      console.error('Error clearing messages from localStorage:', e);
+      console.error("Error clearing messages from localStorage:", e);
     }
   };
 
@@ -70,6 +77,6 @@ export const useLocalStorage = (userId) => {
     messages,
     addMessage,
     clearMessages,
-    saveMessages: () => saveMessages(messages)
+    saveMessages: () => saveMessages(messages),
   };
 };

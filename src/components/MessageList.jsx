@@ -1,6 +1,5 @@
-import React from 'react';
-import Message from './Message';
-import LoadingIndicator from './LoadingIndicator';
+import LoadingIndicator from "./LoadingIndicator";
+import Message from "./Message";
 
 const MessageList = ({ messages, config, isLoading, onOptionSelect }) => {
   return (

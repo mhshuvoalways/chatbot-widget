@@ -1,26 +1,29 @@
-import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send } from "lucide-react";
+import { useState } from "react";
 
 const MessageInput = ({ config, isLoading, onSendMessage }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (message.trim() && !isLoading) {
       onSendMessage(message);
-      setMessage('');
+      setMessage("");
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 flex gap-2 flex-shrink-0">
+    <form
+      onSubmit={handleSubmit}
+      className="p-3 border-t border-gray-200 flex gap-2 flex-shrink-0"
+    >
       <input
         type="text"
         value={message}

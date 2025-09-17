@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 const DEFAULT_CONFIG = {
   primaryColor: "#3b82f6",
@@ -7,8 +7,9 @@ const DEFAULT_CONFIG = {
   title: "Chat with us",
   logoUrl: "",
   supabaseUrl: "https://rwxwoirsbpctwitawfsj.supabase.co",
-  supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3eHdvaXJzYnBjdHdpdGF3ZnNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3OTIxNTEsImV4cCI6MjA2NDM2ODE1MX0.jpCLXhW7oLUH7_YYWzmpI3wEmAYgD1CG4Tp4cr1EMG0",
-  userId: window.chatbotUserId || null,
+  supabaseKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ3eHdvaXJzYnBjdHdpdGF3ZnNqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg3OTIxNTEsImV4cCI6MjA2NDM2ODE1MX0.jpCLXhW7oLUH7_YYWzmpI3wEmAYgD1CG4Tp4cr1EMG0",
+  userId: window.chatbotUserId || "89bae0f4-3516-4b49-9316-0e3f59d2698c",
 };
 
 export const useChatbot = () => {
@@ -19,7 +20,9 @@ export const useChatbot = () => {
   const [leadForms, setLeadForms] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  const sessionId = `session_${Date.now()}_${Math.random()
+    .toString(36)
+    .slice(2, 11)}`;
 
   useEffect(() => {
     initializeData();
@@ -30,13 +33,13 @@ export const useChatbot = () => {
       loadConfiguration(),
       fetchUserPlan(),
       loadConversations(),
-      loadLeadForms()
+      loadLeadForms(),
     ]);
   };
 
   const loadConfiguration = async () => {
     if (!config.userId) return;
-    
+
     try {
       const response = await fetch(
         `${config.supabaseUrl}/rest/v1/chatbot_config?select=*&user_id=eq.${config.userId}`,
@@ -48,10 +51,10 @@ export const useChatbot = () => {
         }
       );
       const data = await response.json();
-      
+
       if (Array.isArray(data) && data.length > 0) {
         const dbConfig = data[0];
-        setConfig(prev => ({
+        setConfig((prev) => ({
           ...prev,
           primaryColor: dbConfig.primary_color || prev.primaryColor,
           welcomeMessage: dbConfig.welcome_message || prev.welcomeMessage,
@@ -68,7 +71,7 @@ export const useChatbot = () => {
 
   const fetchUserPlan = async () => {
     if (!config.userId) return;
-    
+
     try {
       const response = await fetch(
         `${config.supabaseUrl}/rest/v1/profiles?select=last_plan,balance&id=eq.${config.userId}`,
@@ -80,7 +83,7 @@ export const useChatbot = () => {
         }
       );
       const data = await response.json();
-      
+
       if (Array.isArray(data) && data.length > 0) {
         setUserPlan(data[0].last_plan);
         setBalance(data[0].balance || 0);
@@ -92,7 +95,7 @@ export const useChatbot = () => {
 
   const loadConversations = async () => {
     if (!config.userId) return;
-    
+
     try {
       const response = await fetch(
         `${config.supabaseUrl}/rest/v1/conversations?select=conversation_id,message,options&user_id=eq.${config.userId}`,
@@ -104,14 +107,18 @@ export const useChatbot = () => {
         }
       );
       const data = await response.json();
-      
-      setConversations((data || []).map(conv => ({
-        conversation_id: conv.conversation_id,
-        message: conv.message,
-        options: Array.isArray(conv.options)
-          ? conv.options.filter(opt => typeof opt === "object" && opt.label && opt.nextId)
-          : [],
-      })));
+
+      setConversations(
+        (data || []).map((conv) => ({
+          conversation_id: conv.conversation_id,
+          message: conv.message,
+          options: Array.isArray(conv.options)
+            ? conv.options.filter(
+                (opt) => typeof opt === "object" && opt.label && opt.nextId
+              )
+            : [],
+        }))
+      );
     } catch (error) {
       console.error("Error loading conversations:", error);
     }
@@ -119,7 +126,7 @@ export const useChatbot = () => {
 
   const loadLeadForms = async () => {
     if (!config.userId) return;
-    
+
     try {
       const response = await fetch(
         `${config.supabaseUrl}/rest/v1/lead_forms?select=*&user_id=eq.${config.userId}`,
@@ -131,11 +138,13 @@ export const useChatbot = () => {
         }
       );
       const data = await response.json();
-      
-      setLeadForms((data || []).map(form => ({
-        ...form,
-        form_fields: Array.isArray(form.form_fields) ? form.form_fields : [],
-      })));
+
+      setLeadForms(
+        (data || []).map((form) => ({
+          ...form,
+          form_fields: Array.isArray(form.form_fields) ? form.form_fields : [],
+        }))
+      );
     } catch (error) {
       console.error("Error loading lead forms:", error);
     }
@@ -144,16 +153,19 @@ export const useChatbot = () => {
   const getOnlyAIChatMessages = (allMessages) => {
     let aiChatHistory = [];
     let lastBotOptions = null;
-    
+
     for (let i = 0; i < allMessages.length; i++) {
       const msg = allMessages[i];
       if (msg.type === "bot") {
-        lastBotOptions = Array.isArray(msg.options) && msg.options.length > 0
-          ? msg.options.map(opt => opt.label)
-          : null;
-        if (aiChatHistory.length > 0 && 
-            aiChatHistory[aiChatHistory.length - 1].type === "user" &&
-            !aiChatHistory[aiChatHistory.length - 1].__skip) {
+        lastBotOptions =
+          Array.isArray(msg.options) && msg.options.length > 0
+            ? msg.options.map((opt) => opt.label)
+            : null;
+        if (
+          aiChatHistory.length > 0 &&
+          aiChatHistory[aiChatHistory.length - 1].type === "user" &&
+          !aiChatHistory[aiChatHistory.length - 1].__skip
+        ) {
           aiChatHistory.push(msg);
         }
       } else if (msg.type === "user") {
@@ -164,13 +176,13 @@ export const useChatbot = () => {
         }
       }
     }
-    
-    return aiChatHistory.filter(msg => !msg.__skip);
+
+    return aiChatHistory.filter((msg) => !msg.__skip);
   };
 
   const buildConversationHistory = (messages) => {
     const aiChat = getOnlyAIChatMessages(messages);
-    return aiChat.slice(-10).map(message => {
+    return aiChat.slice(-10).map((message) => {
       if (message.type === "user") {
         return {
           role: "user",
@@ -189,7 +201,7 @@ export const useChatbot = () => {
 
   const sendMessage = async (message, messages, addMessage) => {
     setIsLoading(true);
-    
+
     try {
       const conversationHistory = buildConversationHistory(messages);
 
@@ -208,9 +220,9 @@ export const useChatbot = () => {
           }),
         }
       );
-      
+
       if (!response.ok) throw new Error("Failed to get AI response");
-      
+
       const data = await response.json();
 
       setTimeout(() => {
@@ -232,18 +244,24 @@ export const useChatbot = () => {
     }
   };
 
-  const handleOptionClick = async (option, conversations, leadForms, addMessage, trackAnalytics) => {
+  const handleOptionClick = async (
+    option,
+    conversations,
+    leadForms,
+    addMessage,
+    trackAnalytics
+  ) => {
     setIsLoading(true);
-    
+
     const nextConv = conversations.find(
-      conv => conv.conversation_id === option.nextId
+      (conv) => conv.conversation_id === option.nextId
     );
 
     setTimeout(() => {
       setIsLoading(false);
       if (nextConv) {
         const leadForm = leadForms.find(
-          form => form.conversation_id === option.nextId
+          (form) => form.conversation_id === option.nextId
         );
         addMessage(
           "bot",
@@ -298,6 +316,6 @@ export const useChatbot = () => {
     sendMessage,
     handleOptionClick,
     trackAnalytics,
-    resetChat
+    resetChat,
   };
 };

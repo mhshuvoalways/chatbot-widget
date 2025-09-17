@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, RotateCcw, Bot, User } from 'lucide-react';
-import WelcomeScreen from './WelcomeScreen';
-import ChatInterface from './ChatInterface';
-import { useChatbot } from '../hooks/useChatbot';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { MessageSquare, RotateCcw, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { useChatbot } from "../hooks/useChatbot";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import ChatInterface from "./ChatInterface";
+import WelcomeScreen from "./WelcomeScreen";
 
 const ChatbotWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,15 +21,12 @@ const ChatbotWidget = () => {
     sendMessage: sendAIMessage,
     handleOptionClick,
     trackAnalytics,
-    resetChat: resetChatData
+    resetChat: resetChatData,
   } = useChatbot();
 
-  const {
-    messages,
-    addMessage,
-    clearMessages,
-    saveMessages
-  } = useLocalStorage(config.userId);
+  const { messages, addMessage, clearMessages } = useLocalStorage(
+    config.userId
+  );
 
   useEffect(() => {
     setShowWelcome(messages.length === 0);
@@ -50,20 +47,20 @@ const ChatbotWidget = () => {
       const storedUserInfo = localStorage.getItem(
         `chatbot_user_${config.userId}_${Date.now()}`
       );
-      
+
       if (!storedUserInfo) {
         // Handle login form - for now, we'll skip this complex flow
-        console.log('Login required but not implemented in this conversion');
+        console.log("Login required but not implemented in this conversion");
       }
     }
 
     setShowWelcome(false);
-    
+
     if (messages.length === 0) {
       const welcomeConv = conversations.find(
         (conv) => conv.conversation_id === "welcome"
       );
-      
+
       if (welcomeConv && welcomeConv.options) {
         addMessage("bot", welcomeConv.message, welcomeConv.options);
       } else {
@@ -75,9 +72,9 @@ const ChatbotWidget = () => {
 
   const handleSendMessage = async (message) => {
     if (!message.trim() || isLoading) return;
-    
+
     addMessage("user", message);
-    
+
     if (balance < 1) {
       setTimeout(() => {
         addMessage(
@@ -94,7 +91,7 @@ const ChatbotWidget = () => {
 
   const handleOptionSelect = async (option) => {
     addMessage("user", option.label);
-    
+
     if (balance < 1) {
       setTimeout(() => {
         addMessage(
@@ -106,7 +103,13 @@ const ChatbotWidget = () => {
       return;
     }
 
-    await handleOptionClick(option, conversations, leadForms, addMessage, trackAnalytics);
+    await handleOptionClick(
+      option,
+      conversations,
+      leadForms,
+      addMessage,
+      trackAnalytics
+    );
   };
 
   return (
@@ -116,7 +119,9 @@ const ChatbotWidget = () => {
         ref={toggleButtonRef}
         onClick={toggleWidget}
         className={`w-15 h-15 rounded-full border-none cursor-pointer text-2xl shadow-lg transition-all duration-300 ease-out flex items-center justify-center absolute right-0 bottom-0 hover:scale-110 ${
-          isOpen ? 'translate-y-20 scale-95 opacity-0 pointer-events-none' : 'translate-y-0 scale-100 opacity-100'
+          isOpen
+            ? "translate-y-20 scale-95 opacity-0 pointer-events-none"
+            : "translate-y-0 scale-100 opacity-100"
         }`}
         style={{ backgroundColor: config.primaryColor }}
       >
@@ -127,13 +132,13 @@ const ChatbotWidget = () => {
       <div
         ref={widgetRef}
         className={`w-90 h-[600px] bg-white rounded-xl shadow-2xl flex flex-col mb-2.5 absolute right-0 bottom-0 z-[999] transition-all duration-300 ease-out ${
-          isOpen 
-            ? 'flex opacity-100 translate-y-0 scale-100' 
-            : 'hidden opacity-0 translate-y-10 scale-98'
+          isOpen
+            ? "flex opacity-100 translate-y-0 scale-100"
+            : "hidden opacity-0 translate-y-10 scale-98"
         }`}
       >
         {/* Header */}
-        <div 
+        <div
           className="text-white p-4 rounded-t-xl flex justify-between items-center flex-shrink-0"
           style={{ backgroundColor: config.primaryColor }}
         >
