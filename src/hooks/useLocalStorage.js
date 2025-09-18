@@ -71,6 +71,7 @@ export const useLocalStorage = (userId) => {
 
   useEffect(() => {
     loadMessages();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   return {
